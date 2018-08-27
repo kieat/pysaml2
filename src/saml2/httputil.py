@@ -55,7 +55,7 @@ class Response(object):
 
     def _response(self, message="", **argv):
         if self.template:
-            return [self.template % message]
+            return [(self.template % message).encode()]
         elif self.mako_lookup and self.mako_template:
             argv["message"] = message
             mte = self.mako_lookup.get_template(self.mako_template)
@@ -65,7 +65,7 @@ class Response(object):
                 # Note(JP): A WSGI app should always respond
                 # with bytes, so at this point the message should
                 # become encoded instead of passing a text object.
-                return [message]
+                return [message.encode('utf8')]
             elif isinstance(message, six.binary_type):
                 return [message]
             else:
@@ -221,7 +221,11 @@ def getpath(environ):
     return ''.join([quote(environ.get('SCRIPT_NAME', '')),
                     quote(environ.get('PATH_INFO', ''))])
 
-
+def convert(data):
+    if isinstance(data, bytes):  return data.decode()
+    if isinstance(data, dict):   return dict(map(convert, data.items()))
+    if isinstance(data, tuple):  return map(convert, data)
+    return data
 def get_post(environ):
     # the environment variable CONTENT_LENGTH may be empty or missing
     try:
@@ -232,7 +236,8 @@ def get_post(environ):
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
-    return environ['wsgi.input'].read(request_body_size)
+    bytesResult = environ['wsgi.input'].read(request_body_size)
+    return convert(bytesResult)
 
 
 def get_response(environ, start_response):

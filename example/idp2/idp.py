@@ -37,6 +37,7 @@ from saml2.httputil import Response
 from saml2.httputil import NotFound
 from saml2.httputil import geturl
 from saml2.httputil import get_post
+from saml2.httputil import convert
 from saml2.httputil import Redirect
 from saml2.httputil import Unauthorized
 from saml2.httputil import BadRequest
@@ -371,7 +372,7 @@ class SSO(Service):
     @staticmethod
     def _store_request(saml_msg):
         logger.debug("_store_request: %s", saml_msg)
-        key = sha1(saml_msg["SAMLRequest"]).hexdigest()
+        key = sha1(saml_msg["SAMLRequest"].encode()).hexdigest()
         # store the AuthnRequest
         IDP.ticket[key] = saml_msg
         return key
@@ -859,9 +860,13 @@ def info_from_cookie(kaka):
     if kaka:
         cookie_obj = SimpleCookie(kaka)
         morsel = cookie_obj.get("idpauthn", None)
+
+        b = morsel.value.replace("b'","")
+        b = b.replace("'","")
+
         if morsel:
             try:
-                key, ref = base64.b64decode(morsel.value).split(":")
+                key, ref = base64.b64decode(b).decode().split(":")
                 return IDP.cache.uid2user[key], ref
             except (KeyError, TypeError):
                 return None, None
@@ -887,7 +892,7 @@ def delete_cookie(environ, name):
 
 def set_cookie(name, _, *args):
     cookie = SimpleCookie()
-    cookie[name] = base64.b64encode(":".join(args))
+    cookie[name] = base64.b64encode(":".join(args).encode())
     cookie[name]['path'] = "/"
     cookie[name]["expires"] = _expiration(5)  # 5 minutes from now
     logger.debug("Cookie expires: %s", cookie[name]["expires"])
@@ -1006,7 +1011,7 @@ def application(environ, start_response):
             environ["idp.authn"] = AUTHN_BROKER[authn_ref]
     else:
         try:
-            query = parse_qs(environ["QUERY_STRING"])
+            query = parse_qs(convert(environ["QUERY_STRING"]))
             logger.debug("QUERY: %s", query)
             user = IDP.cache.uid2user[query["id"][0]]
         except KeyError:
@@ -1076,6 +1081,7 @@ if __name__ == '__main__':
                             input_encoding='utf-8', output_encoding='utf-8')
 
     HOST = CONFIG.HOST
+    HOST = '0.0.0.0'
     PORT = CONFIG.PORT
 
     sign_alg = None
@@ -1107,4 +1113,3 @@ if __name__ == '__main__':
         SRV.start()
     except KeyboardInterrupt:
         SRV.stop()
-
