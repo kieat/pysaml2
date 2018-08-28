@@ -10,6 +10,7 @@ from saml2 import SAMLError
 from saml2.s_utils import rndbytes
 from saml2.s_utils import PolicyError
 from saml2.saml import NameID
+from saml2.saml import NAMEID_FORMAT_UNSPECIFIED
 from saml2.saml import NAMEID_FORMAT_PERSISTENT
 from saml2.saml import NAMEID_FORMAT_TRANSIENT
 from saml2.saml import NAMEID_FORMAT_EMAILADDRESS
@@ -166,6 +167,9 @@ class IdentDB(object):
         # if nformat == NAMEID_FORMAT_PERSISTENT:
         #     _id = userid
 
+        if nformat == NAMEID_FORMAT_UNSPECIFIED:
+          _id = self.identity["uid"]
+
         nameid = NameID(format=nformat, sp_name_qualifier=sp_name_qualifier,
                         name_qualifier=name_qualifier, text=_id)
 
@@ -235,7 +239,7 @@ class IdentDB(object):
 
     def construct_nameid(self, userid, local_policy=None,
                          sp_name_qualifier=None, name_id_policy=None,
-                         name_qualifier=""):
+                         name_qualifier="", identity=None):
         """ Returns a name_id for the object. How the name_id is
         constructed depends on the context.
 
@@ -247,7 +251,7 @@ class IdentDB(object):
         :param name_qualifier: A domain qualifier
         :return: NameID instance precursor
         """
-
+        self.identity = identity
         args = self.nim_args(local_policy, sp_name_qualifier, name_id_policy)
         if name_qualifier:
             args["name_qualifier"] = name_qualifier

@@ -59,7 +59,7 @@ from mako.lookup import TemplateLookup
 import saml2.xmldsig as ds
 
 logger = logging.getLogger("saml2.idp")
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.DEBUG)
 
 
 class Cache(object):
@@ -1032,9 +1032,11 @@ def application(environ, start_response):
                 environ['myapp.url_args'] = path
 
             logger.debug("Callback: %s", callback)
+            print(callback)
             if isinstance(callback, tuple):
                 cls = callback[0](environ, start_response, user)
                 func = getattr(cls, callback[1])
+                print(func)
 
                 return func()
             return callback(environ, start_response, user)

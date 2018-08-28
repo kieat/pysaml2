@@ -2,6 +2,8 @@
 import argparse
 import os
 import sys
+sys.path.insert(1, "../src")
+
 from saml2.metadata import entity_descriptor, metadata_tostring_fix
 from saml2.metadata import entities_descriptor
 from saml2.metadata import sign_entity_descriptor

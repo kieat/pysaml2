@@ -41,7 +41,7 @@ USERS = {
         "eduPersonAffiliation": "student",
         "eduPersonScopedAffiliation": "student@example.com",
         "eduPersonPrincipalName": "test@example.com",
-        "uid": "testuser",
+        "uid": "admin",
         "eduPersonTargetedID": "one!for!all",
         "c": "SE",
         "o": "Example Co.",

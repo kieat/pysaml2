@@ -571,7 +571,7 @@ class Server(Entity):
 
     # ------------------------------------------------------------------------
 
-    def gather_authn_response_args(self, sp_entity_id, name_id_policy, userid,
+    def gather_authn_response_args(self, sp_entity_id, name_id_policy, userid, identity=None,
                                    **kwargs):
         param_default = {
             'sign_assertion': False,
@@ -658,7 +658,7 @@ class Server(Entity):
                 args['name_id'] = _nids[0]
             else:
                 args['name_id'] = self.ident.construct_nameid(
-                    userid, args['policy'], sp_entity_id, name_id_policy)
+                    userid, args['policy'], sp_entity_id, name_id_policy, identity=identity)
                 logger.debug("construct_nameid: %s => %s", userid,
                              args['name_id'])
         else:
@@ -718,7 +718,7 @@ class Server(Entity):
         try:
             args = self.gather_authn_response_args(
                 sp_entity_id, name_id_policy=name_id_policy, userid=userid,
-                name_id=name_id, sign_response=sign_response,
+                name_id=name_id, sign_response=sign_response, identity=identity,
                 sign_assertion=sign_assertion,
                 encrypt_cert_advice=encrypt_cert_advice,
                 encrypt_cert_assertion=encrypt_cert_assertion,
