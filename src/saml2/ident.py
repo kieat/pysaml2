@@ -106,7 +106,7 @@ class IdentDB(object):
             _id = self._create_id(nformat, name_qualifier, sp_name_qualifier)
         return _id
 
-    def store(self, ident, name_id):
+    def store(self, ident, name_id, text=None):
         """
 
         :param ident: user identifier
@@ -121,7 +121,10 @@ class IdentDB(object):
         _cn = code(name_id)
         val.append(_cn)
         self.db[ident] = " ".join(val)
-        self.db[name_id.text] = ident
+        if text:
+          self.db[name_id.text] = text
+        else:
+          self.db[name_id.text] = ident
 
     def remove_remote(self, name_id):
         """
@@ -173,7 +176,7 @@ class IdentDB(object):
         nameid = NameID(format=nformat, sp_name_qualifier=sp_name_qualifier,
                         name_qualifier=name_qualifier, text=_id)
 
-        self.store(userid, nameid)
+        self.store(userid, nameid, _id)
         return nameid
 
     def find_nameid(self, userid, **kwargs):

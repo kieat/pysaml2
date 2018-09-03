@@ -103,7 +103,7 @@ def http_form_post_message(message, location, relay_state="",
         relay_state_input=relay_state_input,
         action=location)
 
-    return {"headers": [("Content-type", "text/html")], "data": response}
+    return {"headers": {"Content-type": "text/html"}, "data": response}
 
 
 def http_post_message(message, relay_state="", typ="SAMLRequest", **kwargs):

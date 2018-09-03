@@ -55,7 +55,7 @@ class Request(object):
 
         if not self.message:
             logger.error("Response was not correctly signed")
-            logger.info("Response: %s", xmldata)
+            logger.error("Response: %s", xmldata)
             raise IncorrectlySigned()
 
         logger.info("request: %s", self.message)
@@ -77,9 +77,13 @@ class Request(object):
         # print("issue_instant: %s" % self.message.issue_instant)
         # print("%s < x < %s" % (lower, upper))
         issued_at = time_util.str_to_time(self.message.issue_instant)
+        logger.debug(issued_at)
+        logger.debug(lower)
+        logger.debug(upper)
         return issued_at > lower and issued_at < upper
 
     def _verify(self):
+        logger.error(self.message.version)
         assert self.message.version == "2.0"
         if self.message.destination and self.receiver_addrs and \
                 self.message.destination not in self.receiver_addrs:
@@ -98,7 +102,7 @@ class Request(object):
     def verify(self):
         try:
             return self._verify()
-        except AssertionError:
+        except AssertionError as e:
             return None
 
     def subject_id(self):

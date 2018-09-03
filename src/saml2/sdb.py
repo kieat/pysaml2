@@ -26,7 +26,6 @@ def context_match(cfilter, cntx):
 
 # The key to the stored authn statement is placed encrypted in the cookie
 
-
 class SessionStorage(object):
     """ In memory storage of session information """
 
@@ -79,4 +78,7 @@ class SessionStorage(object):
         logger.debug("remove authn about: %s", name_id)
         nkey = sha1(code_binary(name_id)).hexdigest()
 
-        del self.authn[nkey]
+        try:
+          del self.authn[nkey]
+        except:
+          pass

@@ -1,0 +1,12 @@
+7za.exe
+__pycache__
+*.log
+*.pyc
+.ignore
+idp.xml
+*/*dist-info/*
+latest.zip
+archive.bat
+lambda_function.zip
+idp_conf.py
+sp_bydesign.xml

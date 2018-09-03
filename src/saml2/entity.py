@@ -854,6 +854,7 @@ class Entity(HTTPBase):
         _log_debug("Loaded request")
 
         if _request:
+            _log_debug(_request)
             _request = _request.verify()
             _log_debug("Verified request")
 

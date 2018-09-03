@@ -236,8 +236,9 @@ def get_post(environ):
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
-    bytesResult = environ['wsgi.input'].read(request_body_size)
-    return convert(bytesResult)
+    #bytesResult = environ['wsgi.input'].read(request_body_size)
+    #return convert(bytesResult)
+    return environ['body']
 
 
 def get_response(environ, start_response):

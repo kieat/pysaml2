@@ -190,3 +190,5 @@ Session.vim
 tags
 # Persistent undo
 [._]*.un~
+example/py36/latest.zip
+example/py36/pip/*

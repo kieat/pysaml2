@@ -202,6 +202,7 @@ def _get_xmlsec_cryptobackend(path=None, search_paths=None):
     """
     if path is None:
         path = get_xmlsec_binary(paths=search_paths)
+
     return CryptoBackendXmlSec1(path)
 
 
@@ -343,6 +344,7 @@ def make_temp(string, suffix='', decode=True, delete=True):
     else:
         ntf.write(string)
     ntf.seek(0)
+    logger.debug("finish: write")
     return ntf, ntf.name
 
 
@@ -867,12 +869,13 @@ class CryptoBackendXmlSec1(CryptoBackend):
         """
         if not isinstance(signedtext, six.binary_type):
             signedtext = signedtext.encode()
-
+        logger.debug("start: to make temp")
         _, fil = make_temp(
                 signedtext,
                 suffix='.xml',
                 decode=False,
                 delete=self._xmlsec_delete_tmpfiles)
+        logger.debug("finish: to make temp")
 
         com_list = [
             self.xmlsec,
@@ -1441,6 +1444,7 @@ class SecurityContext(object):
                 id_attr=id_attr)
 
     def _check_signature(self, decoded_xml, item, node_name=NODE_NAME, origdoc=None, id_attr='', must=False, only_valid_cert=False, issuer=None):
+        logger.debug("start: _check_signature")
         try:
             _issuer = item.issuer.text.strip()
         except AttributeError:
