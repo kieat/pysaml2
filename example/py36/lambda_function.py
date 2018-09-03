@@ -165,12 +165,15 @@ def verify_username_and_password(dic):
   else:
     return False, ""
 
-def do_authentication(environ, authn_context, key,
-                      redirect_uri, headers=None):
+def do_authentication(environ, authn_context=authn_context_class_ref(PASSWORD), key=None,
+                      redirect_uri=None, headers=None):
   """
   Display the login form
   """
   logger.debug("Do authentication")
+  if redirect_uri is None:
+    redirect_uri = geturl(environ, query=False)
+  
   auth_info = AUTHN_BROKER.pick(authn_context)
 
   if len(auth_info):
@@ -762,6 +765,7 @@ def lambda_handler(event, context):
   ]
 
   NON_AUTHN_URLS = [
+      (r'login?(.*)$', do_authentication),
       (r'verify?(.*)$', do_verify),
   ]
 
@@ -772,7 +776,11 @@ def lambda_handler(event, context):
   AUTHN_BROKER.add(authn_context_class_ref(UNSPECIFIED),
                    "", 0, CONFIG.BASE)
 
-  path = event['pathParameters']['proxy']
+  try:
+    path = event['pathParameters']['proxy']
+  except:
+    path = None
+
   url_patterns = AUTHN_URLS
   user = None
 
